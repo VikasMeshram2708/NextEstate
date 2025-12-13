@@ -38,9 +38,18 @@ export const propertyRelations = relations(property, ({ many, one }) => ({
   }),
 
   // 1-1
-  address: one(propertyAddress),
-  location: one(propertyLocation),
-  details: one(propertyDetails),
+  address: one(propertyAddress, {
+    fields: [property.id],
+    references: [propertyAddress.propertyId],
+  }),
+  location: one(propertyLocation, {
+    fields: [property.id],
+    references: [propertyLocation.propertyId],
+  }),
+  details: one(propertyDetails, {
+    fields: [property.id],
+    references: [propertyDetails.propertyId],
+  }),
 
   // 1-many
   amenities: many(propertyAmenities),
