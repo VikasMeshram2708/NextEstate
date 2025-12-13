@@ -8,6 +8,7 @@ interface PropertyListing {
   bhk: number;
   baths: number;
   area: number; // in sq.ft
+  location: { lat: number; lng: number };
   address: {
     locality: string;
     city: string;
