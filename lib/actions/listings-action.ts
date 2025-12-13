@@ -118,6 +118,10 @@ export async function getLatestProperties(): Promise<GetLatestPropertiesType> {
     return {
       success: false,
       message: "Failed to fetch latest properties",
+      data: {
+        properties: [],
+        total: 0,
+      },
       error: err?.message ?? "Something went wrong",
     };
   }
