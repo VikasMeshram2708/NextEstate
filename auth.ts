@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 import { db } from "./db";
 import { users } from "./db/schema";
@@ -28,24 +28,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     async signIn({ profile }) {
       try {
-        const [dbUser] = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, profile?.email as string))
-          .limit(1);
+        const userEmail = profile?.email ?? "";
+        const dbUser = await db.query.users.findFirst({
+          where: (d, { eq }) => eq(d.email, userEmail),
+        });
 
         if (!dbUser) {
-          // register the user
           await db.insert(users).values({
-            name: profile?.name as string,
-            email: profile?.email as string,
-            image: profile?.picture as string,
+            name: profile?.name ?? "",
+            email: profile?.email ?? "",
+            image: profile?.picture,
           });
           return true;
         }
-        return false;
+        return true;
       } catch (error) {
-        console.log("error", error);
+        console.log("auth-error", error);
         return false;
       }
     },
@@ -60,6 +58,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (dbUser?.id) {
           token.userId = dbUser.id;
+          token.role = dbUser.role;
         }
       }
 
@@ -72,6 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (dbUser?.id) {
           token.userId = dbUser?.id;
+          token.role = dbUser.role;
         }
       }
       return token;
@@ -79,8 +79,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session?.user) {
         session.user.id = token.userId as string;
+        session.user.role = token.role as string;
       }
       return session;
     },
   },
 });
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      role: string | null;
+    } & DefaultSession["user"];
+  }
+}

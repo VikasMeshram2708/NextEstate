@@ -46,12 +46,14 @@ export default function Header() {
   return (
     <header className="w-full p-2">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <h1 className="flex items-center gap-x-2">
-          <Building2 className="size-8" color="#64748b" />
-          <span className="text-gray-600 tracking-wider text-xl sm:text-3xl font-semibold text-shadow-lg">
-            NextEstate
-          </span>
-        </h1>
+        <Link href="/">
+          <h1 className="flex items-center gap-x-2">
+            <Building2 className="size-8" color="#64748b" />
+            <span className="text-gray-600 tracking-wider text-xl sm:text-3xl font-semibold text-shadow-lg">
+              NextEstate
+            </span>
+          </h1>
+        </Link>
         {/* Desktop */}
         <div className="md:flex items-center gap-4 hidden">
           {navLinks.map((link) => (
