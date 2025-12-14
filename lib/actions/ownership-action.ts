@@ -54,7 +54,7 @@ export async function registerOwnerShip(
         phone,
         verficiationStatus: "PENDING",
       })
-      .where(eq(users.id, user?.id));
+      .where(eq(users.id, user?.id as string));
 
     revalidatePath("/register-ownership");
 

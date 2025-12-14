@@ -34,16 +34,16 @@ export default function PuneHeroSection() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("🏠 Pune Property Search:", {
-      location: searchParams.location,
-      propertyType: searchParams.propertyType,
-      priceRange: searchParams.priceRange,
-      bhk: searchParams.bhk,
-      market: "Pune",
-      timestamp: new Date().toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-      }),
-    });
+    // console.log("🏠 Pune Property Search:", {
+    //   location: searchParams.location,
+    //   propertyType: searchParams.propertyType,
+    //   priceRange: searchParams.priceRange,
+    //   bhk: searchParams.bhk,
+    //   market: "Pune",
+    //   timestamp: new Date().toLocaleString("en-IN", {
+    //     timeZone: "Asia/Kolkata",
+    //   }),
+    // });
 
     alert(
       "Search parameters logged to console! Check developer tools for Pune-specific search data."

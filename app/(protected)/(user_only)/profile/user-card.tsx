@@ -10,6 +10,8 @@ import { eq } from "drizzle-orm";
 
 export default async function UserProfileCard() {
   const user = await isAuthenticated();
+  const isSuperAdmin = user?.role === "SUPER_ADMIN";
+
   if (!user) notFound();
 
   const dbUser = await db.query.users.findFirst({
@@ -35,8 +37,14 @@ export default async function UserProfileCard() {
           <CardTitle className="text-xl capitalize">{user.name}</CardTitle>
 
           <div className="mt-2 flex flex-wrap gap-2">
-            <Badge variant="secondary">Ownership Status</Badge>
-            <Badge variant="outline">{dbUser.verficiationStatus}</Badge>
+            {!isSuperAdmin && (
+              <>
+                <Badge variant="secondary">Ownership Status</Badge>
+                <Badge variant="outline">
+                  {dbUser.verficiationStatus ?? "—"}
+                </Badge>
+              </>
+            )}
           </div>
         </div>
       </CardHeader>

@@ -4,7 +4,7 @@ import { getLatestProperties } from "@/lib/actions/listings-action";
 
 export default async function PropertiesGrid() {
   const res = await getLatestProperties();
-  console.log("res", res);
+  // console.log("res", res);
 
   if (!res.success) {
     return (
