@@ -1,4 +1,4 @@
-export { Role, timeStamps, users } from "./user-schema";
+export { Role, timeStamps, users, VerificationStatus } from "./user-schema";
 export {
   property,
   propertyAddress,

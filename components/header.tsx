@@ -18,6 +18,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const { data, status } = useSession();
@@ -42,6 +44,18 @@ export default function Header() {
       href: "/sell",
     },
   ];
+
+  const router = useRouter();
+  function handlePostPropertyRedirect() {
+    // if the user is not authenticated, show toast message to sign in first
+    if (status !== "authenticated") {
+      toast.error("Please sign in to post a property");
+      return;
+    } else {
+      // else redirect to register ownership page
+      return router.push("/register-ownership");
+    }
+  }
 
   return (
     <header className="w-full p-2">
@@ -68,7 +82,14 @@ export default function Header() {
         </div>
 
         {/* Desktop */}
-        <div className="tracking-wider md:flex items-center gap-3 hidden">
+        <div className="tracking-wider md:flex items-center gap-3 sm:gap-6 hidden">
+          <Button
+            type="button"
+            onClick={handlePostPropertyRedirect}
+            variant={"ghost"}
+          >
+            <Link href="/register-ownership">Post Property</Link>
+          </Button>
           {status === "loading" ? (
             <Loader2Icon className="animate-spin" />
           ) : status === "authenticated" ? (
@@ -136,6 +157,13 @@ export default function Header() {
             </div>
             <SheetFooter>
               <div className="flex flex-col tracking-wider gap-3">
+                <Button
+                  type="button"
+                  onClick={handlePostPropertyRedirect}
+                  variant={"ghost"}
+                >
+                  <Link href="/register-ownership">Post Property</Link>
+                </Button>
                 <Button type="button" onClick={() => signIn("google")}>
                   <span>Sign In With Google</span>
                   <svg

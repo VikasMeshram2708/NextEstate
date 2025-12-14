@@ -1,0 +1,2 @@
+CREATE TYPE "public"."verification_status" AS ENUM('PENDING', 'APPROVED', 'REJECTED', 'INITIATED');--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN "verficiationStatus" "verification_status" DEFAULT 'INITIATED';

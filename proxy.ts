@@ -3,7 +3,7 @@ import { auth } from "./auth";
 
 export const isSuperAdminRouteOnly = ["/approvers"];
 export const isAdminRouteOnly = ["/dashboard"];
-export const protectedRoutes = ["/profile", "/settings"];
+export const protectedRoutes = ["/profile", "/settings", "/register-ownership"];
 
 export async function proxy(req: NextRequest) {
   const session = await auth();
@@ -22,7 +22,6 @@ export async function proxy(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
-
   // console.log({ isSuperAdminRoute, isAdminRoute, isProtectedRoute });
 
   // if there is no session and trying to access super admin protected route
@@ -38,11 +37,16 @@ export async function proxy(req: NextRequest) {
   }
 
   if (!session && isProtectedRoute) {
+    // redirect to home page
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  if (session && isProtectedRoute) {
     // check the role
     if (
-      session?.user.role !== "SUPER_ADMIN" &&
-      session?.user.role !== "ADMIN" &&
-      session?.user.role !== "MEMBNER"
+      session.user.role !== "MEMBER" &&
+      session.user.role !== "SUPER_ADMIN" &&
+      session.user.role !== "ADMIN"
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -63,7 +67,3 @@ export async function proxy(req: NextRequest) {
     }
   }
 }
-
-export const config = {
-  matcher: ["/approvers/:path*", "/dashboard/:path*"],
-};

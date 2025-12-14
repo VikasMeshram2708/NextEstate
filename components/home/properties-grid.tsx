@@ -4,6 +4,7 @@ import { getLatestProperties } from "@/lib/actions/listings-action";
 
 export default async function PropertiesGrid() {
   const res = await getLatestProperties();
+  console.log("res", res);
 
   if (!res.success) {
     return (
@@ -14,7 +15,7 @@ export default async function PropertiesGrid() {
       </Empty>
     );
   }
-  const { properties, total } = res.data;
+  const { properties } = res.data;
 
   if (!properties.length) {
     return (

@@ -59,6 +59,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (dbUser?.id) {
           token.userId = dbUser.id;
           token.role = dbUser.role;
+          token.isVerified = dbUser.isVerified;
         }
       }
 
@@ -72,6 +73,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (dbUser?.id) {
           token.userId = dbUser?.id;
           token.role = dbUser.role;
+          token.isVerified = dbUser.isVerified;
         }
       }
       return token;
@@ -80,6 +82,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session?.user) {
         session.user.id = token.userId as string;
         session.user.role = token.role as string;
+        session.user.isVerified = token.isVerified as boolean;
       }
       return session;
     },
@@ -90,6 +93,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       role: string | null;
+      isVerified: boolean | null;
     } & DefaultSession["user"];
   }
 }

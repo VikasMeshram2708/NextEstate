@@ -12,7 +12,7 @@ import {
   propertyImages,
   propertyAmenities,
   propertyFavorites,
-  propertyEnquiry,
+  // propertyEnquiry,
   users,
 } from "./schema";
 
@@ -29,15 +29,15 @@ const now = () => new Date().toISOString();
 async function truncateAll() {
   console.log("🧹 Truncating tables...");
 
-  await db.delete(propertyFavorites);
-  await db.delete(propertyEnquiry);
-  await db.delete(propertyImages);
-  await db.delete(propertyAmenities);
-  await db.delete(propertyDetails);
-  await db.delete(propertyLocation);
-  await db.delete(propertyAddress);
-  await db.delete(property);
-  await db.delete(users);
+  // await db.delete(propertyFavorites);
+  // await db.delete(propertyEnquiry);
+  // await db.delete(propertyImages);
+  // await db.delete(propertyAmenities);
+  // await db.delete(propertyDetails);
+  // await db.delete(propertyLocation);
+  // await db.delete(propertyAddress);
+  // await db.delete(property);
+  // await db.delete(users);
 }
 
 /* -------------------------------------------------- */

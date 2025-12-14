@@ -1,4 +1,5 @@
 import {
+  boolean,
   index,
   pgEnum,
   pgTable,
@@ -20,6 +21,13 @@ export const timeStamps = {
 
 export const Role = pgEnum("role", ["SUPER_ADMIN", "ADMIN", "MEMBER"]);
 
+export const VerificationStatus = pgEnum("verification_status", [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "INITIATED",
+]);
+
 export const users = pgTable(
   "users",
   {
@@ -28,11 +36,17 @@ export const users = pgTable(
     email: text().notNull().unique(),
     image: text(),
     password: text(),
+    phone: text(),
+    panNumber: text(),
+    address: text(),
     role: Role().default("MEMBER"),
+    isVerified: boolean().default(false),
+    verficiationStatus: VerificationStatus().default("INITIATED"),
     ...timeStamps,
   },
   (d) => [
     index("users_role_idx").on(d.role),
     index("users_email_idx").on(d.email),
+    index("users_pan_no_idx").on(d.panNumber),
   ]
 );
