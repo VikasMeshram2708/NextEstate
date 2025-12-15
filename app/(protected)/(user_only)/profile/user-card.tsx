@@ -2,14 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { isAuthenticated } from "@/lib/is-authenticated";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { auth } from "@/auth";
 
 export default async function UserProfileCard() {
-  const user = await isAuthenticated();
+  const session = await auth();
+  const user = session?.user;
+
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
   if (!user) notFound();

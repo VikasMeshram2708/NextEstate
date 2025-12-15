@@ -1,26 +1,31 @@
 "use server";
 
 import { db } from "@/db";
-import { isAuthenticated } from "@/lib/is-authenticated";
+import { users } from "@/db/schema";
+import { count, eq } from "drizzle-orm";
 
 export async function getApproverUsersList() {
-  "use cache";
   try {
-    const user = await isAuthenticated();
+    // TODO: add pagination later
+    const unverifiedUserList = await db
+      .select()
+      .from(users)
+      .where(eq(users.verficiationStatus, "PENDING"))
+      .limit(10);
 
-    if (!user) {
-      throw new Error("Unauthorized");
-    }
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(eq(users.verficiationStatus, "PENDING"));
 
-    const unverifiedUserList = await db.query.users.findMany({
-      where: (d, { eq }) => eq(d.isVerified, false),
-    });
+    const total = totalResult.count;
 
     return {
       success: true,
       message: "Successfully fetch the unverified users.",
       data: {
-        unverified_users: unverifiedUserList,
+        total: total,
+        list: unverifiedUserList,
       },
     };
   } catch (error) {

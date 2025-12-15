@@ -1,12 +1,12 @@
 "use server";
 
 import { connection } from "next/server";
-import { isAuthenticated } from "../is-authenticated";
 import { RegisterOwnershipSchema } from "@/app/(protected)/(user_only)/register-ownership/ownership-schema";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
+import { auth } from "@/auth";
 
 type ActionResult = {
   success: boolean;
@@ -20,8 +20,8 @@ export async function registerOwnerShip(
 ): Promise<ActionResult> {
   try {
     await connection();
-
-    const user = await isAuthenticated();
+    const session = await auth();
+    const user = session?.user;
     if (!user) {
       return { success: false, message: "Unauthorized" };
     }

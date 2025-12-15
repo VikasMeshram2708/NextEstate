@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import "dotenv/config";
 import { randomUUID } from "crypto";
 
 import { db } from ".";
 import { sampleProperties } from "@/data";
+import { seed } from "drizzle-seed";
 
 import {
   property,
@@ -153,9 +155,16 @@ async function seedMyDB() {
 /* Run */
 /* -------------------------------------------------- */
 
-seedMyDB()
-  .then(() => process.exit(0))
-  .catch((err) => {
-    console.error("❌ Seed failed", err);
-    process.exit(1);
-  });
+// seedMyDB()
+//   .then(() => process.exit(0))
+//   .catch((err) => {
+//     console.error("❌ Seed failed", err);
+//     process.exit(1);
+//   });
+
+async function seedFakeUsers() {
+  console.log("seeding initiated fake users");
+  await seed(db, { users });
+  console.log("seeding complete for fake users...");
+}
+seedFakeUsers().catch(console.error);

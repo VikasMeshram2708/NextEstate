@@ -25,6 +25,8 @@ export default function Header() {
   const { data, status } = useSession();
   const user = data?.user;
 
+  const isSuperAdmin = user?.role === "SUPER_ADMIN";
+
   interface NavLink {
     href: string;
     label: string;
@@ -99,6 +101,11 @@ export default function Header() {
                 <span>{user?.name ?? "Anon"}</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
+                {isSuperAdmin && (
+                  <DropdownMenuItem>
+                    <Link href="/approvers">Approvers</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem>
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
