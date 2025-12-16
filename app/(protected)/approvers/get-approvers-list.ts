@@ -1,5 +1,11 @@
 "use server";
 
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+
 type ApproverListType = {
   id: string;
   name: string;
@@ -28,16 +34,52 @@ type GetListReturnType = {
   };
 };
 
+const BASE_URL = "http://localhost:3000/api";
+
 export async function getList(
   currPage: number
 ): Promise<GetListReturnType | undefined> {
-  const base_URL = "http://localhost:3000/api";
-
-  const res = await fetch(`${base_URL}/approvers/get-all?page=${currPage}`);
-
-  if (!res.ok) {
+  try {
+    const res = await fetch(`${BASE_URL}/approvers/get-all?page=${currPage}`);
+    if (!res.ok) return undefined;
+    return res.json();
+  } catch (error) {
+    console.error("Failed to fetch approvers:", error);
     return undefined;
   }
+}
 
-  return res.json();
+export async function updateUserOwnershipStatus(
+  status: "APPROVE" | "REJECT" | "PENDING",
+  toUserId: string
+): Promise<{ status: boolean; message: string }> {
+  try {
+    const session = await auth();
+
+    if (session?.user?.role !== "SUPER_ADMIN") {
+      return { status: false, message: "Unauthorized" };
+    }
+
+    const map = {
+      APPROVE: "APPROVED",
+      PENDING: "PENDING",
+      REJECT: "REJECTED",
+    } as const;
+
+    await db
+      .update(users)
+      .set({ verficiationStatus: map[status] })
+      .where(eq(users.id, toUserId));
+
+    // revalidate
+    revalidatePath("/approvers");
+
+    return { status: true, message: "User status updated successfully" };
+  } catch (error) {
+    console.error(error);
+    return {
+      status: false,
+      message: "Something went wrong. Please try again.",
+    };
+  }
 }

@@ -10,20 +10,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import ChangeStatus from "./change-status";
 
 type ApproverListParams = {
   page: number;
 };
 
+/**
+ * TODO: Add feature to update the status using optimistic hook
+ */
 export default async function ApproverList({ page }: ApproverListParams) {
   // console.log("pp", page);
 
@@ -56,19 +51,7 @@ export default async function ApproverList({ page }: ApproverListParams) {
                   <TableCell className="capitalize">{el.name}</TableCell>
                   <TableCell>{el.email}</TableCell>
                   <TableCell>
-                    <Select defaultValue="pending">
-                      <SelectTrigger>
-                        <SelectValue defaultValue="Select Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Status</SelectLabel>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="reject">Reject</SelectItem>
-                          <SelectItem value="reject">Reject</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <ChangeStatus id={el.id} />
                   </TableCell>
                 </TableRow>
               );
