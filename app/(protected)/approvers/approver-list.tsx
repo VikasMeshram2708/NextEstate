@@ -1,9 +1,10 @@
-import { formatDate } from "@/lib/format-date";
-import { getApproverUsersList } from "./get-apprvers-list";
-
+import { Button } from "@/components/ui/button";
+import { getList } from "./get-approvers-list";
+import Link from "next/link";
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -12,87 +13,85 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 
-export default async function ApproverList() {
-  const result = await getApproverUsersList();
+type ApproverListParams = {
+  page: number;
+};
 
-  // 🔒 Type narrowing (IMPORTANT)
-  if (!result.success || !result.data) {
-    return (
-      <p className="text-center text-sm text-muted-foreground">
-        Failed to load approvers
-      </p>
-    );
-  }
+export default async function ApproverList({ page }: ApproverListParams) {
+  // console.log("pp", page);
 
-  const { list, total } = result.data;
+  const allList = await getList(page);
+  // console.log("allList", allList);
+
+  const isPrevBtnDisabled = page <= 1;
+  const isNextBtnDisaled = page >= Number(allList?.meta?.totalPages);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 lg:py-16 space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Pending Approvals</h2>
-        <span className="text-sm text-muted-foreground">Total: {total}</span>
-      </div>
-
-      {/* Table */}
-      <div className="rounded-lg border overflow-x-auto">
+    <div className="max-w-7xl mx-auto px-6 py-10 lg:py-20">
+      {/* list */}
+      <div>
         <Table>
+          <TableCaption>A list of recent approving list.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-16">INDEX</TableHead>
+              <TableHead>INDEX</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="whitespace-nowrap">Created At</TableHead>
             </TableRow>
           </TableHeader>
-
           <TableBody>
-            {list.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="py-10 text-center text-muted-foreground"
-                >
-                  No pending approvers
-                </TableCell>
-              </TableRow>
-            ) : (
-              list.map((user, idx) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{idx + 1}</TableCell>
-
-                  <TableCell>{user.name}</TableCell>
-
-                  <TableCell>{user.email}</TableCell>
-
+            {allList?.meta?.list?.map((el, idx) => {
+              const globalIndex = (page - 1) * allList?.meta?.limit + idx + 1;
+              return (
+                <TableRow key={idx}>
+                  <TableCell>{globalIndex}</TableCell>
+                  <TableCell className="capitalize">{el.name}</TableCell>
+                  <TableCell>{el.email}</TableCell>
                   <TableCell>
-                    <Select defaultValue={user.verficiationStatus ?? undefined}>
-                      <SelectTrigger className="w-36">
-                        <SelectValue placeholder="Select status" />
+                    <Select defaultValue="pending">
+                      <SelectTrigger>
+                        <SelectValue defaultValue="Select Status" />
                       </SelectTrigger>
-
                       <SelectContent>
-                        <SelectItem value="PENDING">Pending</SelectItem>
-                        <SelectItem value="APPROVED">Approved</SelectItem>
-                        <SelectItem value="REJECTED">Rejected</SelectItem>
+                        <SelectGroup>
+                          <SelectLabel>Status</SelectLabel>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="reject">Reject</SelectItem>
+                          <SelectItem value="reject">Reject</SelectItem>
+                        </SelectGroup>
                       </SelectContent>
                     </Select>
                   </TableCell>
-
-                  <TableCell className="whitespace-nowrap">
-                    {user.createdAt ? formatDate(user.createdAt) : "—"}
-                  </TableCell>
                 </TableRow>
-              ))
-            )}
+              );
+            })}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="flex items-center justify-center gap-4 mt-8">
+        <Button variant="outline" disabled={isPrevBtnDisabled} asChild>
+          <Link href={`/approvers?page=${page - 1}`}>Previous</Link>
+        </Button>
+
+        <div className="flex items-center gap-2 px-4 py-2 rounded-md">
+          <span className="text-sm text-muted-foreground">Page</span>
+          <span className="font-semibold">{page}</span>
+          <span className="text-sm text-muted-foreground">of</span>
+          <span className="font-semibold">{allList?.meta?.totalPages}</span>
+        </div>
+
+        <Button variant="outline" disabled={isNextBtnDisaled} asChild>
+          <Link href={`/approvers?page=${page + 1}`}>Next</Link>
+        </Button>
       </div>
     </div>
   );
